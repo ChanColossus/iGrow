@@ -1,18 +1,50 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, ImageBackground, Image } from 'react-native';
+import { View, StyleSheet, ImageBackground, Image,Alert } from 'react-native';
 import { TextInput, Button } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native'; 
+import axios from "axios";
+import { useAuth } from '../../navigation/RouteNavigator';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const LoginScreen = () => {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigation = useNavigation(); 
-
+  const { login } = useAuth();
   const handleLogin = () => {
     // Handle login logic here
-    console.log('Username:', username);
+    const user = {
+      email: email,
+      password: password,
+    };
+    console.log('Email:', email);
     console.log('Password:', password);
-    navigation.navigate('Main'); 
+    axios
+      .post(`http://192.168.100.117:8000/login`, user)
+      .then((response) => {    
+        const name = response.data.name;
+        const role = response.data.role;
+        console.log(response.data);
+        const userId = response.data.id;
+        AsyncStorage.setItem("name", name);
+        AsyncStorage.setItem("userId", userId);
+        AsyncStorage.setItem("role", role);
+        AsyncStorage.setItem("isLoggedIn", "true");
+        login(userId);
+      })
+      .catch((error) => {
+        if (error.response) {
+          if (error.response.status === 403) {
+            Alert.alert("Login Error", "Account not verified");
+          } else if (error.response.status === 401) {
+            Alert.alert("Login Error", "Invalid Credentials");
+          }
+        } else {
+          Alert.alert("Login Error", "Failed to log in");
+          console.log("Error:", error.message);
+        }
+      });
+
   };
 
   return (
@@ -45,8 +77,8 @@ const LoginScreen = () => {
       <View style={styles.overlay}>
         <TextInput
           label="Username"
-          value={username}
-          onChangeText={setUsername}
+          value={email}
+          onChangeText={setEmail}
           style={styles.inputContainer}
           mode="outlined" 
         />

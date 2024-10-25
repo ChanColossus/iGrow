@@ -1,17 +1,32 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Alert } from 'react-native';
 import { Text, Button, Avatar, Card } from 'react-native-paper';
+import { useAuth } from '../../navigation/RouteNavigator';
 
 const ProfileScreen = () => {
+  const { logout } = useAuth();
+
   const user = {
     name: 'John Doe',
     email: 'john.doe@example.com',
-    profilePicture: 'https://via.placeholder.com/150', // Placeholder image URL
+    profilePicture: 'https://via.placeholder.com/150',
   };
 
-  const handleEditProfile = () => {
-    // Handle edit profile logic here
-    console.log('Edit Profile Pressed');
+  const handleLogout = () => {
+    Alert.alert(
+      'Logout',
+      'Are you sure you want to logout?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Logout',
+          style: 'destructive',
+          onPress: () => {
+            logout();
+          },
+        },
+      ]
+    );
   };
 
   return (
@@ -30,10 +45,14 @@ const ProfileScreen = () => {
             {user.email}
           </Text>
           <View style={styles.buttonContainer}>
-            <Button mode="contained" onPress={handleEditProfile} style={styles.buttonBlue}>
+            <Button
+              mode="contained"
+              onPress={() => console.log('Edit Profile Pressed')}
+              style={styles.buttonBlue}
+            >
               Edit Profile
             </Button>
-            <Button mode="contained" style={styles.buttonRed}>
+            <Button mode="contained" onPress={handleLogout} style={styles.buttonRed}>
               Logout
             </Button>
           </View>
@@ -74,12 +93,12 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   buttonBlue: {
-    backgroundColor: '#007bff', // Blue color
+    backgroundColor: '#007bff',
     marginRight: 8,
     flex: 1,
   },
   buttonRed: {
-    backgroundColor: '#dc3545', // Red color
+    backgroundColor: '#dc3545',
     flex: 1,
   },
 });
