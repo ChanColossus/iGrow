@@ -1,88 +1,95 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, ImageBackground, Image,Alert,Text,TouchableOpacity } from 'react-native';
+import { View, StyleSheet, ImageBackground, Image,Alert,TouchableOpacity,Text } from 'react-native';
 import { TextInput, Button } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native'; 
 import axios from "axios";
 import { useAuth } from '../../navigation/RouteNavigator';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const LoginScreen = () => {
+const RegisterScreen = () => {
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigation = useNavigation(); 
   const { login } = useAuth();
-  const handleRegisterNavigation = () => {
-    navigation.navigate("Register");
+  const handleLoginNavigation = () => {
+    navigation.navigate("Login");
   };
-  const handleLogin = () => {
+  const handleRegister = () => {
     // Handle login logic here
     const user = {
+      name: name,
       email: email,
       password: password,
     };
+    console.log('Name:', name);
     console.log('Email:', email);
     console.log('Password:', password);
     axios
-      .post(`http://192.168.100.117:8000/login`, user)
-      .then((response) => {    
-        const name = response.data.name;
-        const role = response.data.role;
-        console.log(response.data);
-        const userId = response.data.id;
-        AsyncStorage.setItem("name", name);
-        AsyncStorage.setItem("userId", userId);
-        AsyncStorage.setItem("role", role);
-        AsyncStorage.setItem("isLoggedIn", "true");
-        login(userId);
+      .post(`http://192.168.100.117:8000/register`, user)
+      .then((response) => {
+        console.log(response);
+        setName("");
+        setPassword("");
+        setEmail("");
+        navigation.navigate("Login");
+        Alert.alert(
+          "Registration Successful",
+          "You have registered successfully"
+        );
       })
       .catch((error) => {
-        if (error.response) {
-          if (error.response.status === 403) {
-            Alert.alert("Login Error", "Account not verified");
-          } else if (error.response.status === 401) {
-            Alert.alert("Login Error", "Invalid Credentials");
-          }
-        } else {
-          Alert.alert("Login Error", "Failed to log in");
-          console.log("Error:", error.message);
-        }
+        Alert.alert(
+          "Registration Error",
+          "An error occurred during registration"
+        );
+        console.log("Registration Failed", error);
       });
 
   };
 
   return (
+    
     <ImageBackground 
       source={require('../../assets/6.png')}
       style={styles.background}
       resizeMode="cover" 
     >
+        <TouchableOpacity style={styles.buttonLoc}  onPress={handleLoginNavigation}>
+        <Text style={styles.buttonText2}>Login</Text>
+      </TouchableOpacity>
       <Image 
         source={require('../../assets/1.png')} 
         style={styles.overlayImage1}
       />
+
+
       <Image 
         source={require('../../assets/4.png')}
         style={styles.overlayImage4}
       />
-     
       <Image 
         source={require('../../assets/5.png')}
         style={styles.overlayImage5}
-      />
-       <Image 
-        source={require('../../assets/12.png')}
-        style={styles.overlayImage6}
       />
       <Image 
         source={require('../../assets/3.png')} 
         style={styles.overlayImage3}
       />
       <Image 
-        source={require('../../assets/2.png')} 
+        source={require('../../assets/11.png')} 
         style={styles.overlayImage2}
       />
       
       <View style={styles.overlay}>
+      
+      <TextInput
+          label="Name"
+          value={name}
+          onChangeText={setName}
+          style={styles.inputContainer}
+          mode="outlined" 
+        />
         <TextInput
           label="Username"
           value={email}
@@ -98,12 +105,9 @@ const LoginScreen = () => {
           style={styles.inputContainer}
           mode="outlined" 
         />
-        <Button mode="contained" onPress={handleLogin} style={styles.button} labelStyle={styles.buttonText}>
-          Login
+        <Button mode="contained" onPress={handleRegister} style={styles.button} labelStyle={styles.buttonText}>
+          Register
         </Button>
-        <TouchableOpacity style={styles.buttonLoc}  onPress={handleRegisterNavigation}>
-        <Text style={styles.buttonText2}>Don't have an account? Register here!</Text>
-      </TouchableOpacity>
       </View>
       
     </ImageBackground>
@@ -114,18 +118,11 @@ const styles = StyleSheet.create({
   background: {
     flex: 1,
   },
-  buttonLoc: {
-    top: '2%',
-    left: '4%',
-    width: '50%',
- 
-    zIndex: 10,
-    
-  },
-  buttonText2: {
-    color: 'white', 
-    fontWeight: 'bold',
-    textAlign: 'right'
+  buttonText: {
+    color: 'black',
+    fontSize: 10,
+    textAlign: 'center',
+    marginTop: 5
   },
   overlay: {
     flex: 1,
@@ -142,16 +139,16 @@ const styles = StyleSheet.create({
   },
   overlayImage2: {
     position: 'absolute',
-    top: '-5%', 
-    left: '15%',
-    width: '70%', 
+    top: '-10%', 
+    left: '4%',
+    width: '100%', 
     height: '50%',
     resizeMode: 'contain',
     alignItems: 'center',
   },
   overlayImage3: {
     position: 'absolute',
-    top: '7%', 
+    top: '-2%', 
     left: '30%', 
     width: '40%', 
     height: '50%',
@@ -169,37 +166,39 @@ const styles = StyleSheet.create({
   },
   overlayImage5: {
     position: 'absolute',
-    top: '10%', 
-    left: '-44.8%', 
-    width: '200%', 
-    height: '100%',
-    resizeMode: 'contain', 
-    alignItems: 'center', 
-  },
-  overlayImage6: {
-    position: 'absolute',
-    top: '-6%', 
-    left: '-15%', 
-    width: '130%', 
+    top: '5%', 
+    left: '-68.8%', 
+    width: '250%', 
     height: '100%',
     resizeMode: 'contain', 
     alignItems: 'center', 
   },
   inputContainer: {
-    top: '8%',
-    width: '60%',
+    top: '6%',
+    width: '80%',
     marginBottom: 16,
     height: 20, 
     paddingVertical: 5, 
   },
   button: {
-    top: '18%',
+    top: '13%',
     width: '40%',
     backgroundColor: '#b3eda9',
+  },
+  buttonLoc: {
+    top: '17.3%',
+    left: '63%',
+    width: '100%',
+    zIndex: 10,
+    
   },
   buttonText: {
     color: '#17412d', 
   },
+  buttonText2: {
+    color: '#105d5e', 
+    fontWeight: 'bold'
+  },
 });
 
-export default LoginScreen;
+export default RegisterScreen;

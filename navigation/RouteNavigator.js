@@ -7,6 +7,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import HomeScreen from '../screens/HomeScreen';
 import LandingPage from '../screens/LandingPage';
 import LoginScreen from '../screens/Auth/Login';
+import RegisterScreen from '../screens/Auth/Register';
 import ProfileScreen from '../screens/User/Profile';
 import AboutUs from '../screens/User/AboutUs';
 
@@ -34,6 +35,7 @@ function PublicTabs() {
       <Tab.Screen name="Home" component={LandingPage} />
       <Tab.Screen name="About" component={AboutUs} />
       <Tab.Screen name="Login" component={LoginScreen} />
+      
     </Tab.Navigator>
   );
 }
@@ -84,15 +86,18 @@ export default function RouteNavigator() {
 
   return (
     <AuthContext.Provider value={authContext}>
-      <NavigationContainer>
-        <Stack.Navigator screenOptions={{ headerShown: false }}>
-          {isLoggedIn ? (
-            <Stack.Screen name="Authenticated" component={AuthenticatedTabs} />
-          ) : (
+    <NavigationContainer>
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        {isLoggedIn ? (
+          <Stack.Screen name="Authenticated" component={AuthenticatedTabs} />
+        ) : (
+          <>
             <Stack.Screen name="Public" component={PublicTabs} />
-          )}
-        </Stack.Navigator>
-      </NavigationContainer>
-    </AuthContext.Provider>
+            <Stack.Screen name="Register" component={RegisterScreen} />
+          </>
+        )}
+      </Stack.Navigator>
+    </NavigationContainer>
+  </AuthContext.Provider>
   );
 }
