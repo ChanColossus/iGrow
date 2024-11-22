@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "iGROW",
-    "slug": "iGROW",
+    "slug": "igrow",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -22,6 +22,12 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "3533206c-b002-4eee-a0b7-d828f4d9430e"
+      }
+    },
+    "owner": "christianq07"
   }
 }
