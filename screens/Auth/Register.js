@@ -200,7 +200,7 @@ const styles = StyleSheet.create({
   },
   overlayImage1: {
     position: 'absolute',
-    top: 8, 
+    top: 4, 
     left: 0, 
     width: '100%', 
     height: 100, 
