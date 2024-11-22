@@ -4,8 +4,7 @@ import { Text, Avatar,TextInput,Button,Card } from 'react-native-paper';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import * as ImagePicker from 'expo-image-picker'; 
-import { useIsFocused } from '@react-navigation/native';
-const HomeScreen = ({ navigation }) => {
+const TestimonialsScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
@@ -16,10 +15,16 @@ const HomeScreen = ({ navigation }) => {
   const [description, setDescription] = useState('');
   const [images, setImages] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
+  const [UpdateModalVisible, setUpdateModalVisible] = useState(false);
   const [posts, setPosts] = useState([]);
-  const isFocused = useIsFocused();
-  const handleCPNavigation = () => {
-    navigation.navigate("ControlPanel");
+  const [userId, setUserId] = useState(null);
+  const [updateP,setUpdateP] = useState('');
+  const [updateTitle,setUpdateT] = useState('');
+  const [updateDesc,setUpdateD] = useState('');
+ 
+  const fetchUserId = async () => {
+    const storedUserId = await AsyncStorage.getItem('userId');
+    setUserId(storedUserId);
   };
   const handleCreatePost = () => {
     if (images.length === 0) {
@@ -31,7 +36,7 @@ const HomeScreen = ({ navigation }) => {
       title: title,
       description: description,
       email: email,
-      user: user
+   
     };
   
     // Create a FormData object to append the images and user data
@@ -39,7 +44,7 @@ const HomeScreen = ({ navigation }) => {
     formData.append('title', title);
     formData.append('description', description);
     formData.append('email', email);
-    formData.append('user', user);
+ 
     // Loop through the images array and append each image
     images.forEach((image, index) => {
       formData.append("images", {
@@ -108,7 +113,7 @@ const HomeScreen = ({ navigation }) => {
       const emails = await AsyncStorage.getItem('email');
       if (emails) {
         const api = emails;
-        const postResponse = await axios.get(`http://192.168.100.117:8000/post/${api}`);
+        const postResponse = await axios.get(`http://192.168.100.117:8000/posts`);
         
         // Log the raw response for debugging
         console.log('Raw response:', postResponse.data);
@@ -122,13 +127,14 @@ const HomeScreen = ({ navigation }) => {
             // Log the posts in full (including images arrays)
             postsArray.forEach(post => {
               console.log('Post Details:', post);
+              console.log('Post Details:', post.userRole);
               if (Array.isArray(post.images)) {
                 console.log('Images:', post.images); // Log the images array for each post
               }
             });
             const sortedPosts = postsArray.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
             // Update the state with the latest posts (slicing if needed)
-            setPosts(sortedPosts.slice(0, 2));
+            setPosts(sortedPosts);
           } else {
             console.log('No posts array found');
           }
@@ -144,9 +150,63 @@ const HomeScreen = ({ navigation }) => {
       setLoading(false); // Set loading to false after fetching data
     }
   };
-  
-  
-  
+ 
+  const handleUpdate = () => {
+    const post = {
+        title: updateTitle,
+        description: updateDesc,
+        id: updateP._id
+      };
+      axios
+        .put(`http://192.168.100.117:8000/update-post`, post)
+        .then((response) => {
+          console.log(response);
+          fetchPosts().then(() => {
+            console.log('Posts refreshed after creation.');
+          });
+          Alert.alert(
+            "Post Update Successfully",
+            "Thank you!"
+          );
+        })
+        .catch((error) => {
+          Alert.alert(
+            "Post Update Error",
+            "An error occurred during post update"
+          );
+          console.log("Updating Post Failed", error);
+        });
+    setUpdateModalVisible(false); // Open the update modal
+  };
+  const handleEdit = (post) => {
+    fetchPosts();
+    setUpdateP(post);
+    setUpdateD(updateP.description);
+    setUpdateT(updateP.title); // Set the post to be updated
+    setUpdateModalVisible(true); // Open the update modal
+  };
+  const handleDelete = (postId) => {
+    // Call the API to delete the post (or delete locally if needed)
+    fetch(`http://192.168.100.117:8000/post/${postId}`, {
+      method: 'DELETE',
+    })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          // Remove the post from the state or refresh the posts list
+          setPosts(prevPosts => prevPosts.filter(post => post._id !== postId));
+          Alert.alert(
+            "Post Deleted Successfully"
+          );
+        } else {
+          alert('Failed to delete the post.');
+        }
+      })
+      .catch(error => {
+        console.error('Error deleting post:', error);
+        alert('An error occurred while deleting the post.');
+      });
+  };
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -155,12 +215,13 @@ const HomeScreen = ({ navigation }) => {
           const api = emails;
           const profileResponse = await axios.get(`http://192.168.100.117:8000/profile/${api}`);
           const userProfile = profileResponse.data;
-
+          const aydi = await AsyncStorage.getItem('userId');
           setEmail(userProfile.user.email);
           setPassword(userProfile.user.password);
           setName(userProfile.user.name);
           setRole(userProfile.user.role);
-          setUser(userProfile.user.dp?.[0]?.url);
+          setUser(aydi);
+          
         } else {
           console.log('Authentication token not found');
         }
@@ -170,21 +231,10 @@ const HomeScreen = ({ navigation }) => {
         setLoading(false); // Set loading to false after fetching data
       }
     };
-    
+    fetchUserId();
     fetchPosts();
     fetchProfile();
-    if (isFocused) {
-      // Reload or refresh logic here
-      console.log('HomeScreen is focused. Reloading data...');
-      fetchPosts(); // Example function to fetch data
-    }
-  }, [console.log(posts),isFocused]);
-
-  const highlight = {
-    title: 'Innovative Farming',
-    description: 'iGROW’s Dual Source Aquaponics Thrives in Central Signal Village, Taguig City',
-    image: 'https://via.placeholder.com/150', 
-  };
+  }, [console.log(posts)]);
 
   if (loading) {
     // Show loader while data is being fetched
@@ -198,70 +248,85 @@ const HomeScreen = ({ navigation }) => {
 
   return (
     <ImageBackground 
-      source={require('../assets/6.png')} 
+      source={require('../../assets/6.png')} 
       style={styles.background}
       resizeMode="cover" 
     >
       <Image 
-        source={require('../assets/1.png')} 
+        source={require('../../assets/1.png')} 
         style={styles.overlayImage1}
       />
        <Image 
-        source={require('../assets/3.png')} 
+        source={require('../../assets/3.png')} 
         style={styles.overlayImage8}
-      />
-      <Image 
-        source={require('../assets/7.png')} 
-        style={styles.overlayImage5}
       />
       <TouchableOpacity style={styles.button} onPress={() => setModalVisible(true)}>
         <Text style={styles.buttonText}>Create Post</Text>
       </TouchableOpacity>
-    
-      <Avatar.Image
-        source={{ uri: user }}
-        size={50}
-        style={styles.avatar}
-      />
-      <Text variant="headlineMedium" style={styles.name}>
-        {name}
-      </Text>
-      <Text variant="headlineMedium" style={styles.headlineTitle}>
-        {highlight.title}
-      </Text>
-      <Image 
-        source={require('../assets/8.png')} 
-        style={styles.imageHighlight}
-      />
-      <Text variant="bodyMedium" style={styles.description}>
-        {highlight.description}
-      </Text>
-      {role === 'admin' && (
-        <TouchableOpacity style={styles.buttonLoc} onPress={handleCPNavigation}>
-          <Text style={styles.buttonText2}>Control Panel</Text>
-        </TouchableOpacity>
-      )}
-      <View style={styles.container}>
-        <Text variant="headlineLarge" style={styles.title}>
-          Your Recent Posts
+      <Text variant="headlineLarge" style={styles.title}>
+          Testimonials
         </Text>
+      <View style={styles.container}>
+       
       </View>
       <ScrollView contentContainerStyle={styles.container2} key={posts.length}>
-        {posts.map((post, index) => (
-          <Card key={index} style={styles.card2}>
-            <Card.Content>
-              <Text variant="titleMedium" style={styles.cardTitle2}>
-                {post.title}
-              </Text>
-              <Text variant="bodySmall" style={styles.cardContent2}>
-                {post.description}
-              </Text>
-             
-        
-            </Card.Content>
-          </Card>
-        ))}
-      </ScrollView>
+  {posts.map((post, index) => (
+    <Card key={index} style={styles.card2}>
+      <Card.Content>
+        {/* Row for User Display Picture and Name */}
+        <View style={styles.userRow}>
+          {post.userDp && post.userDp.length > 0 && (
+            <Image
+              source={{ uri: post.userDp[0].url }}
+              style={styles.userDp}
+            />
+          )}
+          <Text variant="titleMedium" style={styles.userName}>
+            {post.userName}
+          </Text>
+        </View>
+
+        {/* Post Title */}
+        <Text variant="titleMedium" style={styles.cardTitle2}>
+          {post.title}
+        </Text>
+
+        {/* Post Description */}
+        <Text variant="bodySmall" style={styles.cardContent2}>
+          {post.description}
+        </Text>
+
+        {/* Post Image */}
+        {post.images && Array.isArray(post.images) && post.images.length > 0 && (
+          <Image
+            source={{ uri: post.images[0].url }}
+            style={styles.postImage}
+          />
+        )}
+
+        {/* Action Buttons */}
+        {(email === post.email || role === "admin") && (
+            <View style={styles.buttonContainer}>
+             <Button
+  mode="outlined"
+  onPress={() => handleEdit(post)} // Pass the post and open the modal
+  style={styles.editButton}
+>
+  Edit
+</Button>
+              <Button
+                mode="contained"
+                onPress={() => handleDelete(post._id)}
+                style={styles.deleteButton}
+              >
+                Delete
+              </Button>
+            </View>
+          )}
+      </Card.Content>
+    </Card>
+  ))}
+</ScrollView>
       <Modal
         animationType="slide"
         transparent={true}
@@ -300,28 +365,92 @@ const HomeScreen = ({ navigation }) => {
           </View>
         </View>
       </Modal>
+
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={UpdateModalVisible}
+        onRequestClose={() => setUpdateModalVisible(false)} // Close modal on back press
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Update Post</Text>
+            <TextInput
+              style={styles.textInput1}
+              placeholder="Title"
+              value={updateTitle}
+              onChangeText={(text) => setUpdateT(text)}
+              mode="outlined"
+            />
+              <TextInput
+              style={styles.textInput}
+              placeholder="Description"
+              value={updateDesc}
+              onChangeText={(text) => setUpdateD(text)}
+              multiline
+              mode="outlined"
+            />
+             {/* <Button mode="outlined" onPress={handleImagePick} style={styles.buttonImage}>
+          Upload
+        </Button> */}
+            <View style={styles.modalButtons}>
+              <Button mode="contained" onPress={handleUpdate} style={styles.modalButton}>
+                Update Post
+              </Button>
+              <Button mode="text" onPress={() => setUpdateModalVisible(false)} style={styles.modalButton1}>
+                Cancel
+              </Button>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </ImageBackground>
   );
 };
 
 const styles = StyleSheet.create({
-  
+    userRow: {
+        flexDirection: 'row', // Aligns items in a row
+        alignItems: 'center', // Vertically centers items
+        marginBottom: 10, // Add some spacing below the row
+      },
+      userDp: {
+        width: 50, // Profile picture width
+        height: 50, // Profile picture height
+        borderRadius: 25, // Makes it circular
+        marginRight: 10, // Add spacing between the picture and the name
+      },
+      userName: {
+        fontSize: 16, // Adjust font size as needed
+        fontWeight: 'bold', // Bold text for the user name
+      },
+    buttonContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginTop: 10,
+      },
+      editButton: {
+        width: '45%',
+        backgroundColor: '#b3eda9',
+        marginRight: 5,
+      },
+      deleteButton: {
+        width: '45%',
+        backgroundColor: 'black',
+        marginLeft: 5,
+      },
+    postImage: {
+        width: '100%',
+        height: 200,
+        marginTop: 10,
+        borderRadius: 8,
+        resizeMode: 'cover',
+      },
   container2: {
     padding: 16,
+    marginTop:15
   },
-  buttonLoc: {
-    top: '-5.5%',
-    left: '47.3%',
-    width: '50%',
- 
-    zIndex: 10,
-    
-  },
-  buttonText2: {
-    color: 'white', 
-    fontWeight: 'bold',
-    textAlign: 'right'
-  },
+  
   title2: {
     fontSize: 20,
     fontWeight: 'bold',
@@ -434,20 +563,12 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     textAlign: 'center',
-    top: 65,
-  },
-  button1: {
-    backgroundColor: '#b3eda9',
-    top: 110,
-    left: 300,
-    width: '20%',
-    height: 25,
-    borderRadius: 10,
-    zIndex: 10, // Higher values bring the button to the front
+    top: 60,
+    left:-130
   },
   button: {
     backgroundColor: '#b3eda9',
-    top: 102,
+    top: 95,
     left: 300,
     width: '20%',
     height: 25,
@@ -513,4 +634,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default HomeScreen;
+export default TestimonialsScreen;

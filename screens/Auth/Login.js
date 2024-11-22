@@ -9,10 +9,14 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 const LoginScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [role, setRole] = useState('');
   const navigation = useNavigation(); 
   const { login } = useAuth();
   const handleRegisterNavigation = () => {
     navigation.navigate("Register");
+  };
+  const handleForgotPassowrdNavigation = () => {
+    navigation.navigate("ForgotPassword");
   };
   const handleLogin = () => {
     // Handle login logic here
@@ -26,12 +30,14 @@ const LoginScreen = () => {
       .post(`http://192.168.100.117:8000/login`, user)
       .then((response) => {    
         const name = response.data.name;
-        const role = response.data.role;
+        const roles = response.data.role;
         console.log(response.data);
         const userId = response.data.id;
+        setRole(role);
         AsyncStorage.setItem("name", name);
+        AsyncStorage.setItem("email", email);
         AsyncStorage.setItem("userId", userId);
-        AsyncStorage.setItem("role", role);
+        AsyncStorage.setItem("userRole", role);
         AsyncStorage.setItem("isLoggedIn", "true");
         login(userId);
       })
@@ -104,7 +110,11 @@ const LoginScreen = () => {
         <TouchableOpacity style={styles.buttonLoc}  onPress={handleRegisterNavigation}>
         <Text style={styles.buttonText2}>Don't have an account? Register here!</Text>
       </TouchableOpacity>
+      <TouchableOpacity style={styles.buttonLoc2}  onPress={handleForgotPassowrdNavigation}>
+        <Text style={styles.buttonText2}>Forgot Password</Text>
+      </TouchableOpacity>
       </View>
+   
       
     </ImageBackground>
   );
@@ -117,6 +127,14 @@ const styles = StyleSheet.create({
   buttonLoc: {
     top: '2%',
     left: '4%',
+    width: '50%',
+ 
+    zIndex: 10,
+    
+  },
+  buttonLoc2: {
+    top: '17%',
+    left: '-9.9%',
     width: '50%',
  
     zIndex: 10,
@@ -135,7 +153,7 @@ const styles = StyleSheet.create({
   },
   overlayImage1: {
     position: 'absolute',
-    top: 0, 
+    top: 8, 
     left: 0, 
     width: '100%', 
     height: 100, 
@@ -178,7 +196,7 @@ const styles = StyleSheet.create({
   },
   overlayImage6: {
     position: 'absolute',
-    top: '-6%', 
+    top: '-7%', 
     left: '-15%', 
     width: '130%', 
     height: '100%',

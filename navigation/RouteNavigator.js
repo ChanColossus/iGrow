@@ -8,8 +8,13 @@ import HomeScreen from '../screens/HomeScreen';
 import LandingPage from '../screens/LandingPage';
 import LoginScreen from '../screens/Auth/Login';
 import RegisterScreen from '../screens/Auth/Register';
+import ForgotPasswordScreen from '../screens/Auth/ForgotPassword';
+import ResetPasswordScreen from '../screens/Auth/ResetPassword';
 import ProfileScreen from '../screens/User/Profile';
 import AboutUs from '../screens/User/AboutUs';
+import ControlPanel from '../screens/Admin/ControlPanel';
+import Testimonials from '../screens/User/Testimonials';
+
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -56,18 +61,22 @@ function AuthenticatedTabs() {
       <Tab.Screen name="Home" component={HomeScreen} />
       <Tab.Screen name="About" component={AboutUs} />
       <Tab.Screen name="Profile" component={ProfileScreen} />
+      <Tab.Screen name="Testimonials" component={Testimonials} />
+      
     </Tab.Navigator>
   );
 }
 
 export default function RouteNavigator() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-
+  
   // Check if user is logged in (using AsyncStorage)
   useEffect(() => {
     const checkLoginStatus = async () => {
       const userId = await AsyncStorage.getItem('userId');
-      setIsLoggedIn(!!userId); // Set login state based on userId existence
+     
+      setIsLoggedIn(!!userId);
+      
     };
     checkLoginStatus();
   }, []);
@@ -77,6 +86,7 @@ export default function RouteNavigator() {
     login: async (userId) => {
       await AsyncStorage.setItem('userId', userId);
       setIsLoggedIn(true);
+      
     },
     logout: async () => {
       await AsyncStorage.clear();
@@ -89,11 +99,19 @@ export default function RouteNavigator() {
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         {isLoggedIn ? (
+          <>
           <Stack.Screen name="Authenticated" component={AuthenticatedTabs} />
+          <Stack.Screen name="ControlPanel" component={ControlPanel} />
+          </>
+          
+          
         ) : (
           <>
             <Stack.Screen name="Public" component={PublicTabs} />
             <Stack.Screen name="Register" component={RegisterScreen} />
+            <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
+            <Stack.Screen name="ResetPassword" component={ResetPasswordScreen} />
+            <Stack.Screen name="ControlPanel" component={ControlPanel} />
           </>
         )}
       </Stack.Navigator>
