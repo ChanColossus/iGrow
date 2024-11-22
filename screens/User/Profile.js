@@ -42,7 +42,7 @@ const ProfileScreen = ({ navigation }) => {
         console.log(emails);
         if (emails) {
           const api = emails;
-          const profileResponse = await axios.get(`http://192.168.100.117:8000/profile/${api}`);
+          const profileResponse = await axios.get(`https://igrow-backend.onrender.com/profile/${api}`);
           const userProfile = profileResponse.data;
 
           setEmail(userProfile.user.email);

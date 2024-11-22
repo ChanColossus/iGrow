@@ -20,7 +20,7 @@ const ForgotPassowrdScreen = () => {
     };
     console.log('Email:', email);
     axios
-      .post(`http://192.168.100.117:8000/forgot-password`, user)
+      .post(`https://igrow-backend.onrender.com/forgot-password`, user)
       .then((response) => {
         console.log(response);
         setEmail("");

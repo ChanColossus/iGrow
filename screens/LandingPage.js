@@ -4,7 +4,7 @@ import { Text, Button, Avatar,Card } from 'react-native-paper';
 
 const HomeScreen = ({ navigation }) => {
   const showAlert = () => {
-    Alert.alert('Please login first!');
+    Alert.alert('Please login first! Thank you!');
     navigation.navigate("Login");
   };
   

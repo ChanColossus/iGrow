@@ -59,7 +59,7 @@ const HomeScreen = ({ navigation }) => {
   
     // Axios request to send the form data
     axios
-      .post(`http://192.168.100.117:8000/post-create`, formData, config)
+      .post(`https://igrow-backend.onrender.com/post-create`, formData, config)
       .then((response) => {
         console.log('Response:', response);
         setTitle('');
@@ -108,7 +108,7 @@ const HomeScreen = ({ navigation }) => {
       const emails = await AsyncStorage.getItem('email');
       if (emails) {
         const api = emails;
-        const postResponse = await axios.get(`http://192.168.100.117:8000/post/${api}`);
+        const postResponse = await axios.get(`https://igrow-backend.onrender.com/post/${api}`);
         
         // Log the raw response for debugging
         console.log('Raw response:', postResponse.data);
@@ -153,7 +153,7 @@ const HomeScreen = ({ navigation }) => {
         const emails = await AsyncStorage.getItem('email');
         if (emails) {
           const api = emails;
-          const profileResponse = await axios.get(`http://192.168.100.117:8000/profile/${api}`);
+          const profileResponse = await axios.get(`https://igrow-backend.onrender.com/profile/${api}`);
           const userProfile = profileResponse.data;
 
           setEmail(userProfile.user.email);

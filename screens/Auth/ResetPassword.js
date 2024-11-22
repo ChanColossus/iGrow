@@ -23,7 +23,7 @@ const ResetPasswordScreen = () => {
     console.log('Token:', token);
     console.log('Password:', password);
     axios
-      .put(`http://192.168.100.117:8000/reset-password`, user)
+      .put(`https://igrow-backend.onrender.com/reset-password`, user)
       .then((response) => {
         console.log(response);
         setToken("");
