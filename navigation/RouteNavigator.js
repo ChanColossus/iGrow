@@ -15,6 +15,7 @@ import AboutUs from '../screens/User/AboutUs';
 import ControlPanel from '../screens/Admin/ControlPanel';
 import Dashboard from '../screens/Admin/Dashboard';
 import Testimonials from '../screens/User/Testimonials';
+import WaterCollection from '../screens/Admin/Data/WaterCollection';
 
 
 const Stack = createNativeStackNavigator();
@@ -104,6 +105,7 @@ export default function RouteNavigator() {
           <Stack.Screen name="Authenticated" component={AuthenticatedTabs} />
           <Stack.Screen name="ControlPanel" component={ControlPanel} />
           <Stack.Screen name="Dashboard" component={Dashboard} />
+          <Stack.Screen name="WaterCollection" component={WaterCollection} />
           </>
           
           
@@ -115,6 +117,7 @@ export default function RouteNavigator() {
             <Stack.Screen name="ResetPassword" component={ResetPasswordScreen} />
             <Stack.Screen name="ControlPanel" component={ControlPanel} />
             <Stack.Screen name="Dashboard" component={Dashboard} />
+            <Stack.Screen name="WaterCollection" component={WaterCollection} />
           </>
         )}
       </Stack.Navigator>

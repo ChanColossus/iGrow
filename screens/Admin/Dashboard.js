@@ -27,40 +27,87 @@ const Dashboard = ({ navigation }) => {
           <Icon name="close" size={24} color="black" />
         </TouchableOpacity> */}
           <View style={styles.links}>
-  <View style={styles.linkContainer}>
-    <Icon name="water" size={24} color="black" />
-    <Text style={styles.link}>Water Collection</Text>
-  </View>
-
-  <View style={styles.linkContainer}>
-    <Icon name="water-drop" size={24} color="black" />
-    <Text style={styles.link}>Water Supply</Text>
-  </View>
-
-  <View style={styles.linkContainer}>
-    <Icon name="filter" size={24} color="black" />
-    <Text style={styles.link}>Water Filtration</Text>
-  </View>
-
-  <View style={styles.linkContainer}>
-    <Icon name="delete" size={24} color="black" />
-    <Text style={styles.link}>Water Drain</Text>
-  </View>
-
-  <View style={styles.linkContainer}>
-    <Icon name="pets" size={24} color="black" />
-    <Text style={styles.link}>Fish Feeding</Text>
-  </View>
-
-  <View style={styles.linkContainer}>
-    <Icon name="solar-power" size={24} color="black" />
-    <Text style={styles.link}>Solar Power</Text>
-  </View>
-
-  <View style={styles.linkContainer}>
-    <Icon name="group" size={24} color="black" />
-    <Text style={styles.link}>User Management</Text>
-  </View>
+                <TouchableOpacity 
+              style={styles.linkContainer} 
+              onPress={() => navigation.navigate("Dashboard")}
+            >
+              <Icon name="board" size={24} color="black" />
+              <Text style={styles.link}>Dashboard</Text>
+            </TouchableOpacity>
+            <TouchableOpacity 
+  style={styles.linkContainer} 
+  onPress={() => {
+    if (drawer) drawer.closeDrawer(); // Close the drawer first
+    navigation.navigate("WaterCollection"); // Then navigate
+  }}
+>
+  <Icon name="water" size={24} color="black" />
+  <Text style={styles.link}>Water Collection</Text>
+</TouchableOpacity>
+          <TouchableOpacity 
+            style={styles.linkContainer} 
+            onPress={() => {
+                if (drawer) drawer.closeDrawer(); // Close the drawer first
+                navigation.navigate("WaterSupply"); // Then navigate
+              }}
+          >
+              <Icon name="water-drop" size={24} color="black" />
+              <Text style={styles.link}>Water Supply</Text>
+              </TouchableOpacity>
+          
+              <TouchableOpacity 
+            style={styles.linkContainer} 
+            onPress={() => {
+                if (drawer) drawer.closeDrawer(); // Close the drawer first
+                navigation.navigate("WaterFiltration"); // Then navigate
+              }}
+          >
+              <Icon name="filter" size={24} color="black" />
+              <Text style={styles.link}>Water Filtration</Text>
+              </TouchableOpacity>
+          
+              <TouchableOpacity 
+            style={styles.linkContainer} 
+            onPress={() => {
+                if (drawer) drawer.closeDrawer(); // Close the drawer first
+                navigation.navigate("WaterDrain"); // Then navigate
+              }}
+          >
+              <Icon name="delete" size={24} color="black" />
+              <Text style={styles.link}>Water Drain</Text>
+              </TouchableOpacity>
+          
+              <TouchableOpacity 
+            style={styles.linkContainer} 
+            onPress={() => {
+                if (drawer) drawer.closeDrawer(); // Close the drawer first
+                navigation.navigate("FishFeeding"); // Then navigate
+              }}
+          >
+              <Icon name="pets" size={24} color="black" />
+              <Text style={styles.link}>Fish Feeding</Text>
+              </TouchableOpacity>
+          
+              <TouchableOpacity 
+            style={styles.linkContainer} 
+            onPress={() => {
+                if (drawer) drawer.closeDrawer(); // Close the drawer first
+                navigation.navigate("SolarPanel"); // Then navigate
+              }}
+          >
+              <Icon name="solar-power" size={24} color="black" />
+              <Text style={styles.link}>Solar Power</Text>
+              </TouchableOpacity>
+              <TouchableOpacity 
+            style={styles.linkContainer} 
+            onPress={() => {
+                if (drawer) drawer.closeDrawer(); // Close the drawer first
+                navigation.navigate("User"); // Then navigate
+              }}
+          >
+              <Icon name="group" size={24} color="black" />
+              <Text style={styles.link}>User Management</Text>
+              </TouchableOpacity>
 </View>
 
         </View>
