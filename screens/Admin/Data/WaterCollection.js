@@ -32,7 +32,7 @@ const WaterCollection = ({ navigation }) => {
    
      // Axios request to send the form data
      axios
-  .post(`http://192.168.100.117:8000/wc-create`, formData, config)
+  .post(`https://igrow-backend.onrender.com/wc-create`, formData, config)
   .then((response) => {
     console.log('Response:', response);
     
