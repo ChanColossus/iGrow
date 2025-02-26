@@ -19,7 +19,7 @@ const HomeScreen = ({ navigation }) => {
   const [posts, setPosts] = useState([]);
   const isFocused = useIsFocused();
   const handleCPNavigation = () => {
-    navigation.navigate("ControlPanel");
+    navigation.navigate("Dashboard");
   };
   const handleCreatePost = () => {
     if (images.length === 0) {
@@ -238,7 +238,7 @@ const HomeScreen = ({ navigation }) => {
       </Text>
       {role === 'admin' && (
         <TouchableOpacity style={styles.buttonLoc} onPress={handleCPNavigation}>
-          <Text style={styles.buttonText2}>Control Panel</Text>
+          <Text style={styles.buttonText2}>Dashboard</Text>
         </TouchableOpacity>
       )}
       <View style={styles.container}>
@@ -311,7 +311,7 @@ const styles = StyleSheet.create({
   },
   buttonLoc: {
     top: '-5.5%',
-    left: '47.3%',
+    left: '44.8%',
     width: '50%',
  
     zIndex: 10,

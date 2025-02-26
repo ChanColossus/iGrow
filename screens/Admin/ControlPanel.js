@@ -61,7 +61,7 @@ const ControlPanelScreen = ({ navigation }) => {
     const toggleButton4 = () => setIsOn4((prev) => !prev);
     const toggleButton5 = () => setIsOn5((prev) => !prev);
   const showAlert = () => {
-    navigation.navigate("Home");
+    navigation.navigate("Dashboard");
   };
 
   return (
@@ -96,7 +96,7 @@ const ControlPanelScreen = ({ navigation }) => {
       />
       
       <TouchableOpacity style={styles.button} onPress={showAlert}>
-        <Text style={styles.buttonText}>Home</Text>
+        <Text style={styles.buttonText}>Back</Text>
       </TouchableOpacity>
 
       {/* Toggle Button */}

@@ -13,6 +13,7 @@ import ResetPasswordScreen from '../screens/Auth/ResetPassword';
 import ProfileScreen from '../screens/User/Profile';
 import AboutUs from '../screens/User/AboutUs';
 import ControlPanel from '../screens/Admin/ControlPanel';
+import Dashboard from '../screens/Admin/Dashboard';
 import Testimonials from '../screens/User/Testimonials';
 
 
@@ -102,6 +103,7 @@ export default function RouteNavigator() {
           <>
           <Stack.Screen name="Authenticated" component={AuthenticatedTabs} />
           <Stack.Screen name="ControlPanel" component={ControlPanel} />
+          <Stack.Screen name="Dashboard" component={Dashboard} />
           </>
           
           
@@ -112,6 +114,7 @@ export default function RouteNavigator() {
             <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
             <Stack.Screen name="ResetPassword" component={ResetPasswordScreen} />
             <Stack.Screen name="ControlPanel" component={ControlPanel} />
+            <Stack.Screen name="Dashboard" component={Dashboard} />
           </>
         )}
       </Stack.Navigator>
