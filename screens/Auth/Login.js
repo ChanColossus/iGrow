@@ -27,7 +27,7 @@ const LoginScreen = () => {
     console.log('Email:', email);
     console.log('Password:', password);
     axios
-      .post(`https://igrow-backend.onrender.com/login`, user)
+      .post(`http://192.168.100.117:8000/login`, user)
       .then((response) => {    
         const name = response.data.name;
         const roles = response.data.role;

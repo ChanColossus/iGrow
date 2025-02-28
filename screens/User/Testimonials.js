@@ -64,7 +64,7 @@ const TestimonialsScreen = ({ navigation }) => {
   
     // Axios request to send the form data
     axios
-      .post(`https://igrow-backend.onrender.com/post-create`, formData, config)
+      .post(`http://192.168.100.117:8000/post-create`, formData, config)
       .then((response) => {
         console.log('Response:', response);
         setTitle('');
@@ -113,7 +113,7 @@ const TestimonialsScreen = ({ navigation }) => {
       const emails = await AsyncStorage.getItem('email');
       if (emails) {
         const api = emails;
-        const postResponse = await axios.get(`https://igrow-backend.onrender.com/posts`);
+        const postResponse = await axios.get(`http://192.168.100.117:8000/posts`);
         
         // Log the raw response for debugging
         console.log('Raw response:', postResponse.data);
@@ -158,7 +158,7 @@ const TestimonialsScreen = ({ navigation }) => {
         id: updateP._id
       };
       axios
-        .put(`https://igrow-backend.onrender.com/update-post`, post)
+        .put(`http://192.168.100.117:8000/update-post`, post)
         .then((response) => {
           console.log(response);
           fetchPosts().then(() => {
@@ -187,7 +187,7 @@ const TestimonialsScreen = ({ navigation }) => {
   };
   const handleDelete = (postId) => {
     // Call the API to delete the post (or delete locally if needed)
-    fetch(`https://igrow-backend.onrender.com/post/${postId}`, {
+    fetch(`http://192.168.100.117:8000/post/${postId}`, {
       method: 'DELETE',
     })
       .then(response => response.json())
@@ -213,7 +213,7 @@ const TestimonialsScreen = ({ navigation }) => {
         const emails = await AsyncStorage.getItem('email');
         if (emails) {
           const api = emails;
-          const profileResponse = await axios.get(`https://igrow-backend.onrender.com/profile/${api}`);
+          const profileResponse = await axios.get(`http://192.168.100.117:8000/profile/${api}`);
           const userProfile = profileResponse.data;
           const aydi = await AsyncStorage.getItem('userId');
           setEmail(userProfile.user.email);

@@ -27,13 +27,7 @@ const Dashboard = ({ navigation }) => {
           <Icon name="close" size={24} color="black" />
         </TouchableOpacity> */}
           <View style={styles.links}>
-                <TouchableOpacity 
-              style={styles.linkContainer} 
-              onPress={() => navigation.navigate("Dashboard")}
-            >
-              <Icon name="board" size={24} color="black" />
-              <Text style={styles.link}>Dashboard</Text>
-            </TouchableOpacity>
+      
             <TouchableOpacity 
   style={styles.linkContainer} 
   onPress={() => {

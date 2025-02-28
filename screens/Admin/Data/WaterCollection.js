@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { View, StyleSheet, ImageBackground, Image, TouchableOpacity, Text,ScrollView,Modal,Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Animated from "react-native-reanimated";
@@ -11,12 +11,27 @@ const WaterCollection = ({ navigation }) => {
     const [WaterLevel, setWaterLevel] = useState('');
   
     const [modalVisible, setModalVisible] = useState(false);
+    const [data, setData] = useState([]);
+
+
+  const getAllData = async () => {
+    const { data } = await axios.get(`http://192.168.100.117:8000/wcdata`);
+    setData(data.data);
+    console.log(data);
+ // Set filtered items initially to all items
+  };
+
+  useEffect(
+    useCallback(() => {
+      getAllData();
+    }, [])
+  );
     const handleCreateData = () => {
         const post = {
        WaterSource: WaterSource,
        WaterLevel: WaterLevel
      };
-   
+ 
      // Create a FormData object to append the images and user data
      const formData = new FormData();
      formData.append('WaterSource', WaterSource);
@@ -32,7 +47,7 @@ const WaterCollection = ({ navigation }) => {
    
      // Axios request to send the form data
      axios
-  .post(`https://igrow-backend.onrender.com/wc-create`, formData, config)
+  .post(`http://192.168.100.117:8000/wc-create`, formData, config)
   .then((response) => {
     console.log('Response:', response);
     
@@ -70,7 +85,30 @@ const WaterCollection = ({ navigation }) => {
       const showAlert2 = () => {
         navigation.navigate("Dashboard");
       };
-
+      const handleDelete = async (dataId) => {
+        try {
+          const config = {
+            headers: {
+              "Content-Type": "multipart/form-data",
+              // Authorization: Bearer ${getToken()},
+            },
+          };
+          const { data } = await axios.delete(
+            `http://192.168.100.117:8000/wcdata/${dataId}`,
+            config
+          );
+          Alert.alert(
+            "Data deleted",
+            "You have deleted the data successfully"
+          );
+    
+          return { success: true };
+        } catch (error) {
+          console.error("Error deleting item:", error);
+    
+          return { success: false };
+        }
+      };
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
     <ImageBackground 
@@ -94,65 +132,38 @@ const WaterCollection = ({ navigation }) => {
       
         {/* this is where you add the codes */}
         {/* <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', marginTop: -1700, }}> */}
-  <DataTable style={{marginTop: 110}}>
-    {/* Table Header */}
-    <DataTable.Header>
-      <DataTable.Title>Water Source</DataTable.Title>
-      <DataTable.Title numeric>Water Level</DataTable.Title>
-      <DataTable.Title numeric>Date</DataTable.Title>
-      <DataTable.Title numeric>Actions</DataTable.Title>
-    </DataTable.Header>
+        <DataTable style={{ marginTop: 110 }}>
+  <DataTable.Header>
+    <DataTable.Title>Water Source</DataTable.Title>
+    <DataTable.Title style={{left:39}}>Water Level</DataTable.Title>
+    <DataTable.Title style={{left:45}}>Date</DataTable.Title>
+    <DataTable.Title style={{left:40}}>Actions</DataTable.Title>
+  </DataTable.Header>
 
-    {/* Table Rows */}
-    <DataTable.Row>
-      <DataTable.Cell>Commercial Water</DataTable.Cell>
-      <DataTable.Cell numeric>30.4 L</DataTable.Cell>
-      <DataTable.Cell numeric>02-27-2025</DataTable.Cell>
-      <DataTable.Cell numeric>
-      <View style={{ flexDirection: "row", justifyContent: "flex-end" }}>
-        <TouchableOpacity onPress={() => console.log("Update John")}>
-          <Icon name="edit" size={20} color="blue" style={{ marginRight: 10 }} />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => console.log("Delete John")}>
-          <Icon name="delete" size={20} color="red" />
-        </TouchableOpacity>
-      </View>
+  {data.map((item, index) => (
+    <DataTable.Row key={index}>
+       <DataTable.Cell>
+        <ScrollView style={{ maxHeight: 50 }}>
+            <Text>{item.WaterSource}</Text>
+        </ScrollView>
     </DataTable.Cell>
-    </DataTable.Row>
-
-    <DataTable.Row>
-      <DataTable.Cell>Filtered Rain Water</DataTable.Cell>
-      <DataTable.Cell numeric>24 L</DataTable.Cell>
-      <DataTable.Cell numeric>02-26-2025</DataTable.Cell>
-      <DataTable.Cell numeric>
-      <View style={{ flexDirection: "row", justifyContent: "flex-end" }}>
-        <TouchableOpacity onPress={() => console.log("Update John")}>
-          <Icon name="edit" size={20} color="blue" style={{ marginRight: 10 }} />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => console.log("Delete John")}>
-          <Icon name="delete" size={20} color="red" />
-        </TouchableOpacity>
-      </View>
+    <DataTable.Cell numeric>{item.WaterLevel}</DataTable.Cell>
+    <DataTable.Cell numeric>
+        <ScrollView style={{ maxHeight: 50, paddingLeft:30 }}>
+            <Text>{item.createdAt}</Text>
+        </ScrollView>
     </DataTable.Cell>
+      <DataTable.Cell numeric>
+        <View style={{ flexDirection: "row", justifyContent: "flex-end" }}>
+          
+        <TouchableOpacity onPress={() => handleDelete(item._id)}>
+  <Icon name="delete" size={20} color="red" />
+</TouchableOpacity>
+        </View>
+      </DataTable.Cell>
     </DataTable.Row>
-  </DataTable>
- {/* <DataTable>
-
-<DataTable.Header>
-  <DataTable.Title>Name</DataTable.Title>
-  <DataTable.Title numeric>Age</DataTable.Title>
-  <DataTable.Title numeric>Score</DataTable.Title>
-</DataTable.Header>
-
-{data.map((item, index) => (
-  <DataTable.Row key={index}>
-    <DataTable.Cell>{item.name}</DataTable.Cell>
-    <DataTable.Cell numeric>{item.age}</DataTable.Cell>
-    <DataTable.Cell numeric>{item.score}</DataTable.Cell>
-  </DataTable.Row>
-))}
-</DataTable> */}
-{/* </View> */}
+  ))}
+</DataTable>;
  <TouchableOpacity style={styles.button} onPress={() => setModalVisible(true)}>
       <Text style={styles.buttonText}>Create Data</Text>
     </TouchableOpacity>

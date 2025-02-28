@@ -75,7 +75,7 @@ const handleRegister = () => {
 
   // Axios request to send the form data
   axios
-    .post(`https://igrow-backend.onrender.com/register`, formData, config)
+    .post(`http://192.168.100.117:8000/register`, formData, config)
     .then((response) => {
       console.log('Response:', response);
       setName('');
